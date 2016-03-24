@@ -22,3 +22,14 @@ void end_line(void)
             return;
     }
 }
+
+/*
+Comments
+include following headers:
+void end_line(void);
+void spin_180_degrees(void);
+
+change the switch statement accordingly:
+case 0b00000u:
+            end_line();
+*/
