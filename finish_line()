@@ -1,0 +1,19 @@
+void finish_line(void)
+{
+    int i;
+    set_motor_speed(left, medium, 0);
+    set_motor_speed(right, medium, 10);
+    for(i=0; i<24; i++)
+        _delay(100000);
+    motors_brake_all();
+    while(1);
+}
+
+/*
+Comments
+include header:
+void finish_line(void);
+include in switch statement
+case 0b11111u;
+                finish_line();
+                */
