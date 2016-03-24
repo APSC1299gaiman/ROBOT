@@ -2,24 +2,20 @@ void ninety_degree_left(void)
 {
     set_motor_speed(left, rev_fast, 0);
     set_motor_speed(right, fast, 0); 
-    for(int i = 0; i<60; i++)
-        _delay(10750);
-    /*while(SeeLine.B!=0b00001u)
+    while(SeeLine.B!=0b00001u)
     {
         check_sensors();
         set_leds();
-    } */
+    }
 }
 
 void ninety_degree_right(void)
 {
     set_motor_speed(left, fast, 0);
     set_motor_speed(right, rev_fast, 0); 
-    for(int i = 0; i<60; i++)
-        _delay(10750);
-    /*while(SeeLine.B!=0b10000u)
+    while(SeeLine.B!=0b10000u)
     {
         check_sensors();
         set_leds();
-    } */
+    }
 }
