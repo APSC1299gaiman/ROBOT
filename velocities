@@ -1,3 +1,8 @@
-fast    3.023 m/s
-medium  3.49 m/s
-slow    4.493 m/s
+fast    3.023 s/m
+medium  3.49 s/m
+slow    4.493 s/m
+
+end of line delays:
+fast    1934720
+medium  2233600
+slow    2875520
