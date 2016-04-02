@@ -1,0 +1,63 @@
+void nearby_trails_right(void)
+{
+    while(SeeLine.B!= 0b00100u && SeeLine.B!= 0b01000u && SeeLine.B!= 0b10000u && SeeLine.B!= 0b00010u && SeeLine.B!= 0b00001u)
+    {
+        switch(SeeLine.B)
+        {
+            case 0b00101u: SeeLine.B = 0b00100; break;
+            case 0b00110u: SeeLine.B = 0b00100; break;
+            case 0b01010u: SeeLine.B = 0b00100; break;
+            case 0b01001u: SeeLine.B = 0b01000; break;
+            case 0b10001u: SeeLine.B = 0b10000; break;
+        }
+        follow_simple_curves();
+        check_sensors();
+        set_leds();  
+    }
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535);
+    while(!TMR0IF)
+    {
+        if(SeeLine.B==0b10100u || SeeLine.B==0b01100u)
+        {
+           straight_fwd(); 
+        }
+        else
+        {
+            follow_simple_curves();
+        }
+    }
+}
+
+void nearby_trails_left(void)
+{
+    while(SeeLine.B!= 0b00100u && SeeLine.B!= 0b01000u && SeeLine.B!= 0b10000u && SeeLine.B!= 0b00010u && SeeLine.B!= 0b00001u)
+    {
+        switch(SeeLine.B)
+        {
+            case 0b10100u: SeeLine.B = 0b00100; break;
+            case 0b01100u: SeeLine.B = 0b00100; break;
+            case 0b01010u: SeeLine.B = 0b00100; break;
+            case 0b10010u: SeeLine.B = 0b00010; break;
+            case 0b10001u: SeeLine.B = 0b00001; break;
+        }
+        follow_simple_curves();
+        check_sensors();
+        set_leds();  
+    }
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535);
+    while(!TMR0IF)
+    {
+        if(SeeLine.B==0b00101u || SeeLine.B==0b00110u)
+        {
+            straight_fwd();
+        }
+        else
+        {
+            follow_simple_curves();
+        }
+    }
+}
