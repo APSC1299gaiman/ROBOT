@@ -36,4 +36,6 @@ void nearby_trails(void)
     set_motor_speed(right, slow, 27); 
 }
 
+//COMMENTS
+//This will just keep going straight if the center and the right LED's are lit.
 
