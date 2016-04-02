@@ -1,0 +1,72 @@
+void checkAhead(void)
+{
+    //OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+    //TMR0IF = 0; 
+    check_sensors();
+    set_leds();
+    int i;
+    if (SeeLine.B==0b00101u)
+    {
+        for(i=0; i<12; i++)
+            _delay(100000u);
+        if (SeeLine.B==0b00100 || SeeLine.B==0b00110 || SeeLine.B==0b00111)
+        {
+            for(i=0; i<16; i++)
+                _delay(100000u);
+            if (SeeLine.B==0b00100 || SeeLine.B==0b01100 || SeeLine.B==0b11100)
+            {
+                for(i=0; i<20; i++)
+                    _delay(100000u);
+                if (SeeLine.B==0b00100)
+                    straight_fwd();
+                else if (SeeLine.B==0b10000u)
+                    follow_simple_curves();
+                else if (SeeLine.B==00000u)
+                {
+                    motors_brake_all();
+                    while(SeeLine.B!=0b00001)
+                        spin_right;
+                    follow_simple_curves();
+                }
+            }
+                
+        }
+        else
+            nearby_trails();
+    }
+    if (SeeLine.B==0b10100u)
+    {
+        for(i=0; i<12; i++)
+            _delay(100000u);
+        if (SeeLine.B==0b00100 || SeeLine.B==0b01100 || SeeLine.B==0b11100)
+        {
+            for(i=0; i<16; i++)
+                _delay(100000u);
+            if (SeeLine.B==0b00100 || SeeLine.B==0b00110 || SeeLine.B==0b00111)
+            {
+                for(i=0; i<20; i++)
+                    _delay(100000u);
+                if (SeeLine.B==0b00100)
+                    straight_fwd();
+                else if (SeeLine.B==0b00001u)
+                    follow_simple_curves();
+                else if (SeeLine.B==00000u)
+                {
+                    motors_brake_all();
+                    while(SeeLine.B!=0b10000)
+                        spin_right;
+                    follow_simple_curves();
+                }
+            }
+                
+        }
+        else
+            nearby_trails();
+    }
+}
+
+//use following case statements
+case 0b00101u:
+case 0b10100u:
+    checkAhead();
+    break;
