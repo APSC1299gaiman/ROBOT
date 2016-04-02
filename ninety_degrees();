@@ -1,21 +1,27 @@
 void ninety_degree_left(void)
 {
-    set_motor_speed(left, rev_fast, 0);
-    set_motor_speed(right, fast, 0); 
-    while(SeeLine.B!=0b00001u)
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535);
+    while(!TMR0IF && SeeLine.B!=0b00001u && SeeLine.B!=0b00100u)
     {
-        check_sensors();
-        set_leds();
+    set_motor_speed(left, rev_fast, 0);
+    set_motor_speed(right, fast, 0);
+    check_sensors();
+    set_leds();
     }
 }
 
 void ninety_degree_right(void)
 {
-    set_motor_speed(left, fast, 0);
-    set_motor_speed(right, rev_fast, 0); 
-    while(SeeLine.B!=0b10000u)
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535);
+    while(!TMR0IF && SeeLine.B!=0b10000u && SeeLine.B!=0b00100u)
     {
-        check_sensors();
-        set_leds();
+    set_motor_speed(right, rev_fast, 0);
+    set_motor_speed(left, fast, 0);
+    check_sensors();
+    set_leds();
     }
 }
