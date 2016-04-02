@@ -1,10 +1,17 @@
 void finish_line(void)
 {
-    int i;
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+    TMR0IF = 0; 
+    WriteTimer0(42098); //65535-42098 * 1.25*10^-7 * 64 = 0.1875s
     set_motor_speed(left, medium, 0);
     set_motor_speed(right, medium, 10);
-    for(i=0; i<24; i++)
-        _delay(100000);
+    while(!TMR0IF)
+    {
+        check_sensors(); 
+        set_leds();
+        if (SeeLine.B != 0b11111u)
+            return;
+    }
     motors_brake_all();
     while(1);
 }
