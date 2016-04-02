@@ -1,3 +1,10 @@
+// include following case statements
+
+case 0b11100:
+             ninety_degree_left();
+case 0b00111:
+             ninety_degree_right();
+
 void ninety_degree_left(void)
 {
     OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
