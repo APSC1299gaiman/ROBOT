@@ -10,6 +10,7 @@ void motor_control(void)
         .
         case 0b00101u: // LED's 3 & 5
                        //no breaks all above readings end up here
+        case 0b10100u:
             
                       
         follow_simple_curves();
@@ -24,7 +25,8 @@ void follow_simple_curves(void)
 .
 .
 . 
-     if (SeeLine.b.Center && SeeLine.b.Right) nearby_trails();
+     else if (SeeLine.b.Center && SeeLine.b.Right) nearby_trails();
+     else if (SeeLine.b.Center && SeeLine.b.Left) nearby_trails();
 .
 .
 .
