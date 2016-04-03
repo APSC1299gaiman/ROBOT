@@ -1,0 +1,20 @@
+void backwards_follow_simple_curves() 
+{ 
+  while (SeeLine.B!=0b00100) 
+  { 
+      if(SeeLine.B == 0b00001u || SeeLine.B == 0b10000u); 
+      else if (SeeLine.b.CntLeft || SeeLine.B == 0b01100u) 
+  { 
+      set_motor_speed(left, slow, 0);  
+      set_motor_speed(right, stop, 0); 
+  } 
+  else if (SeeLine.b.CntRight || SeeLine.B == 0b00110u) 
+  { 
+      set_motor_speed(left, stop, 0);  
+      set_motor_speed(right, slow, 0);  
+  } 
+    else return; 
+    check_sensors(); 
+    set_leds(); 
+  } 
+} 
