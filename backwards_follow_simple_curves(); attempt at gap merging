@@ -1,6 +1,6 @@
 void backwards_follow_simple_curves()  
 {  
- while (SeeLine.B!=0b00100)  
+ if (SeeLine.B!=0b00100)  
  {  
      if(SeeLine.B == 0b00001u || SeeLine.B == 0b10000u);  
      else if (SeeLine.b.CntLeft || SeeLine.B == 0b01100u)  
