@@ -15,11 +15,11 @@ void more_than_ninety_right(void)
             motors_brake_all();
             while(SeeLine.B != 0b00001)
             {
-                set_motor_speed(right, rev_fast, 0); 
-                set_motor_speed(left, fast, 0); 
+                spin_right();
                 check_sensors(); 
                 set_leds(); 
             }
+            return;
         }
         if (SeeLine.B == 0b10000)
         {
