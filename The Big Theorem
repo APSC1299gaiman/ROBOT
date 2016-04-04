@@ -155,13 +155,17 @@ void end_line(void)
         check_sensors();
         set_leds();
         if(SeeLine.B != 0b00000u)
-        {
-            backwards_follow_simple_curves();
             return;
-        }
     }
     motors_brake_all();
     spin_180_degrees();
+    while(SeeLine.B != 0b00000u)
+    {
+        set_motor_speed(left, medium, 0);
+        set_motor_speed(right, medium, 10);
+        if(SeeLine.B != 0b00000u)
+            return;
+    }
 }
 
 void backwards_follow_simple_curves()
