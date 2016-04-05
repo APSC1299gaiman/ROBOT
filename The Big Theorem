@@ -15,6 +15,9 @@ void spin_180_degrees(void);
 void end_line(void);
 void finish_line(void);
 void backwards_follow_simple_curves(void);
+void check_for_fakes();
+void more_than_ninety_right();
+void reverse(void);
 
 void motor_control(void)
 {
@@ -48,13 +51,27 @@ void motor_control(void)
 
 void follow_simple_curves(void)
 {
-     if ( SeeLine.b.Center ) straight_fwd();
+    if (SeeLine.B == 0b00101u)
+    {
+        OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_1); 
+        TMR0IF = 0; 
+        WriteTimer0(0);        
+        while(!TMR0IF)
+        {
+           check_sensors();
+           set_leds();
+            if(SeeLine.B!=0b00101u)
+                return;
+        }
+        more_than_ninety_right();
+    }
+     else if (SeeLine.b.Center && SeeLine.b.Right) nearby_trails();
+     else if (SeeLine.b.Center && SeeLine.b.Left) nearby_trails();
+     else if ( SeeLine.b.Center ) straight_fwd();
      else if (SeeLine.b.Left) spin_left();
      else if (SeeLine.b.CntLeft) turn_left();
      else if (SeeLine.b.CntRight) turn_right();
      else if (SeeLine.b.Right) spin_right();
-     else if (SeeLine.b.Center && SeeLine.b.Right) nearby_trails();
-     else if (SeeLine.b.Center && SeeLine.b.Left) nearby_trails();
 }
 
 void spin_left(void)
@@ -120,9 +137,16 @@ void nearby_trails(void)
 
 void spin_180_degrees(void)
 {
-      set_motor_speed(left, rev_fast,0);
+     OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+     TMR0IF = 0; 
+     WriteTimer0(11786); //65535-42098 * 1.25*10^-7 * 64 = 0.1875s
+     set_motor_speed(left, rev_fast,0);
      set_motor_speed(right, fast, 0);
-     for (int i = 0; i<160; i++) _delay(21500ul);
+     while(!TMR0IF && SeeLine.B == 0b00000u)
+     {
+        check_sensors(); 
+        set_leds();
+     }
 }
 
 void finish_line(void)
@@ -155,36 +179,73 @@ void end_line(void)
         check_sensors();
         set_leds();
         if(SeeLine.B != 0b00000u)
-            return;
+        {
+            if(SeeLine.B != 0b10000u && SeeLine.B != 0b00001u)
+                return;
+            else
+                check_for_fakes();
+        }
     }
     motors_brake_all();
     spin_180_degrees();
-    while(SeeLine.B != 0b00000u)
+}
+
+void check_for_fakes()
+{   OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535);
+    while(SeeLine.B != 0b00100u && !TMR0IF)
     {
-        set_motor_speed(left, medium, 0);
-        set_motor_speed(right, medium, 10);
-        if(SeeLine.B != 0b00000u)
-            return;
+        check_sensors(); 
+        set_leds();
     }
 }
 
-void backwards_follow_simple_curves()
+void more_than_ninety_right(void)
 {
-    while (SeeLine.B!=0b00100)
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+    TMR0IF = 0; 
+    WriteTimer0(0); 
+    while(!TMR0IF);
     {
-     if(SeeLine.B == 0b00001u || SeeLine.B == 0b10000u);
-     else if (SeeLine.b.CntLeft || SeeLine.B == 0b01100u)
-     {
-         set_motor_speed(left, slow, 0); 
-         set_motor_speed(right, stop, 0);
-     }
-     else if (SeeLine.b.CntRight || SeeLine.B == 0b00110u)
-     {
-         set_motor_speed(left, stop, 0); 
-         set_motor_speed(right, slow, 0); 
-     }
-     else return;
-     check_sensors();
-     set_leds();
+        int i;
+        for (i=0; i<6; i++)
+            _delay(100000);
+        check_sensors(); 
+        set_leds(); 
+        if (SeeLine.B == 0b00101)
+        {
+            nearby_trails();
+            return;
+        }
+        else if (SeeLine.B == 0b00000)
+        {
+            motors_brake_all();
+            reverse();
+            while(SeeLine.B == 0b00000)
+            {
+                check_sensors(); 
+                set_leds();
+            }
+            motors_brake_all();
+            while(!SeeLine.b.Center)
+            {
+                spin_right();
+                check_sensors(); 
+                set_leds(); 
+            }
+            return;
+        }
+        else if (SeeLine.B == 0b10100 || SeeLine.B == 0b00100)
+        {
+            straight_fwd();
+            return;
+        }
     }
+}
+
+void reverse(void)
+{
+    set_motor_speed(left, rev_medium, 0);
+    set_motor_speed(right, rev_medium, -10);
 }
