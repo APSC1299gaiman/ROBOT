@@ -1,0 +1,58 @@
+void more_than_ninety_right(void)
+{
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+    TMR0IF = 0; 
+    WriteTimer0(0); 
+    while(!TMR0IF);
+    {
+        int i;
+        for (i=0; i<6; i++)
+            _delay(100000);
+        check_sensors(); 
+        set_leds(); 
+        if (SeeLine.B == 0b00101)
+        {
+            nearby_trails();
+            return;
+        }
+        else if (SeeLine.B == 0b00000)
+        {
+            motors_brake_all();
+            reverse();
+            while(SeeLine.B == 0b00000)
+            {
+                check_sensors(); 
+                set_leds();
+            }
+            motors_brake_all();
+            while(!SeeLine.b.Center)
+            {
+                spin_right();
+                check_sensors(); 
+                set_leds(); 
+            }
+            return;
+        }
+        else if (SeeLine.B == 0b10100 || SeeLine.B == 0b00100)
+        {
+            straight_fwd();
+            return;
+        }
+    }
+}
+
+// in call
+//if (SeeLine.B == 0b00101u)
+    {
+        OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_1); 
+        TMR0IF = 0; 
+        WriteTimer0(0);        
+        while(!TMR0IF)
+        {
+           check_sensors();
+           set_leds();
+            if(SeeLine.B!=0b00101u)
+                return;
+        }
+        more_than_ninety_right();
+    }
