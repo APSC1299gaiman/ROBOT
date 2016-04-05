@@ -1,13 +1,12 @@
 void more_than_ninety_right(void)
 {
-    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_256); 
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
     TMR0IF = 0; 
     WriteTimer0(0); 
     while(!TMR0IF);
     {
-        //if (SeeLine.B == 0b00111);
         int i;
-        for (i=0; i<16; i++)
+        for (i=0; i<10; i++)
             _delay(100000);
         check_sensors(); 
         set_leds(); 
@@ -19,9 +18,12 @@ void more_than_ninety_right(void)
         else if (SeeLine.B == 0b00000)
         {
             motors_brake_all();
+            reverse();
+            while(SeeLine.B == 0b00000);
+            motors_brake_all();
             while(SeeLine.B != 0b00001)
             {
-                spin_right();
+                turn_right();
                 check_sensors(); 
                 set_leds(); 
             }
@@ -40,4 +42,5 @@ void more_than_ninety_right(void)
     }
 }
 
-//call under follow_simple curves
+//call under follow_simple curves FIRST
+//include reverse function and header
