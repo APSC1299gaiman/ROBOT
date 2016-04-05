@@ -19,7 +19,11 @@ void more_than_ninety_right(void)
         {
             motors_brake_all();
             reverse();
-            while(SeeLine.B == 0b00000);
+            while(SeeLine.B == 0b00000)
+            {
+                check_sensors(); 
+                set_leds();
+            }
             motors_brake_all();
             while(SeeLine.B != 0b00001)
             {
