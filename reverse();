@@ -1,0 +1,5 @@
+void reverse(void)
+{
+    set_motor_speed(left, rev_medium, 0);
+    set_motor_speed(right, rev_medium, -10);
+}
