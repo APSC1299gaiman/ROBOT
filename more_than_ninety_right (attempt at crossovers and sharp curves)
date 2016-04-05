@@ -25,17 +25,13 @@ void more_than_ninety_right(void)
                 set_leds();
             }
             motors_brake_all();
-            while(SeeLine.B != 0b00001)
+            while(SeeLine.B != 0b00111)
             {
                 turn_right();
                 check_sensors(); 
                 set_leds(); 
             }
-            return;
-        }
-        else if (SeeLine.B == 0b10000)
-        {
-            spin_left();
+            ninety_degree_right();
             return;
         }
         else if (SeeLine.B == 0b10100)
