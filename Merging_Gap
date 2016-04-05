@@ -1,0 +1,54 @@
+void merging_gap(void)
+{
+   
+OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(50000u);
+    
+    while(!TMR0IF){
+        check_sensors();
+        set_leds();
+    
+  if (SeeLine.b.Center) straight_fwd();
+  else if (SeeLine.b.Left) turn_left();
+  else if (SeeLine.b.CntLeft) turn_left();
+  else if (SeeLine.b.CntRight) turn_right();
+  else if (SeeLine.b.Right) turn_left();
+     
+                                             }
+    return;
+     
+}
+
+void end_line(void)
+{
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(23000);
+    set_motor_speed(left, medium, 0);
+    set_motor_speed(right, medium, 10);
+    while(!TMR0IF)
+    {
+        check_sensors();
+        set_leds();
+        if (SeeLine.B == 0b00100u || SeeLine.B == 0b01000u || SeeLine.B == 0b00010u) return;
+        else if(SeeLine.B == 0b10000u || SeeLine.B == 0b00001u)
+        {
+            merging_gap();
+            return;
+        }
+    
+        
+        
+        // else return;
+    }
+    motors_brake_all();
+    spin_180_degrees();
+    return;
+}
+
+
+
+//COMMENTS
+//END LINE WAS CHANGED
+// MERGING_GAP is new
