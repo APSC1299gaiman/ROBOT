@@ -24,7 +24,8 @@ void more_than_ninety_right(void)
                 set_leds(); 
             }
             straight_fwd();
-            _delay(179000);
+            for(i=0; i<25; i++)
+                _delay(100000u);
             return;
         }
         else if (SeeLine.B == 0b10100 || SeeLine.B == 0b00100)
