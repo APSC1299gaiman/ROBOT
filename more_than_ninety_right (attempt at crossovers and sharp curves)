@@ -23,6 +23,8 @@ void more_than_ninety_right(void)
                 check_sensors(); 
                 set_leds(); 
             }
+            straight_fwd();
+            _delay(179000);
             return;
         }
         else if (SeeLine.B == 0b10100 || SeeLine.B == 0b00100)
