@@ -1,43 +1,33 @@
-void nearby_trails(void);
-
-void motor_control(void)
-{
-    
-     switch(SeeLine.B)
-     {
-        .
-        .
-        .
-        case 0b00101u: // LED's 3 & 5
-                       //no breaks all above readings end up here
-        case 0b10100u:
-            
-                      
-        follow_simple_curves();
-        .
-        .
-        .
-      }
-}
-
-void follow_simple_curves(void)
-{
-.
-.
-. 
-     else if (SeeLine.b.Center && SeeLine.b.Right) nearby_trails();
-     else if (SeeLine.b.Center && SeeLine.b.Left) nearby_trails();
-.
-.
-.
-}
-
 void nearby_trails(void)
 {
-    set_motor_speed(left, slow, 0); 
-    set_motor_speed(right, slow, 27); 
+    if(SeeLine.B==0b00101u)
+    {
+        while (SeeLine.B!=0b10000u && SeeLine.B!=0b01000u && SeeLine.B!=0b00100u && SeeLine.B!=0b00010u && SeeLine.B!=0b00001u)
+        {
+            switch(SeeLine.B)
+            {
+                case 0b00101u: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
+                case 0b01001u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
+                case 0b01011u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
+                case 0b10001u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
+                case 0b10011u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
+                default: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
+            }
+        }
+    }
+    else if(SeeLine.B==0b00101u)
+    {
+        while (SeeLine.B!=0b10000u && SeeLine.B!=0b01000u && SeeLine.B!=0b00100u && SeeLine.B!=0b00010u && SeeLine.B!=0b00001u)
+        {
+            switch(SeeLine.B)
+            {
+                case 0b10100u: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
+                case 0b10010u: set_motor_speed(left, slow, 0); set_motor_speed(right, stop, 0); break;
+                case 0b10110u: set_motor_speed(left, slow, 0); set_motor_speed(right, stop, 0); break;
+                case 0b10001u: set_motor_speed(right, stop, 0); set_motor_speed(left, slow, 27); break;
+                case 0b11001u: set_motor_speed(right, stop, 0); set_motor_speed(left, slow, 27); break;
+                default: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
+            }
+        }
+    }
 }
-
-//COMMENTS
-//This will just keep going straight if the center and the right LED's are lit.
-
