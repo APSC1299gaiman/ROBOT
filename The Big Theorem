@@ -17,6 +17,7 @@ void finish_line(void);
 void backwards_follow_simple_curves(void);
 void check_for_fakes();
 void more_than_ninety_right();
+void more_than_ninety_left();
 void reverse(void);
 
 void motor_control(void)
@@ -31,22 +32,23 @@ void motor_control(void)
         case 0b10000u:
         case 0b00101u:
         case 0b10100u:
-                       follow_simple_curves();
-                       break;
+            follow_simple_curves();
+            break;
         case 0b00000u:
-                       end_line();
-                       break;
+            end_line();
+            break;
         case 0b11100u:
-                       ninety_degree_left();
-                       break;
+            ninety_degree_left();
+            break;
         case 0b00111u:
-                       ninety_degree_right();
-                       break;
+            ninety_degree_right();
+            break;
         case 0b11111u:
-                       finish_line();
-                       break;
-        default:       break;
-      }
+            finish_line();
+            break;
+        default:
+            break;
+      } 
 }
 
 void follow_simple_curves(void)
@@ -65,13 +67,25 @@ void follow_simple_curves(void)
         }
         more_than_ninety_right();
     }
-     else if (SeeLine.b.Center && SeeLine.b.Right) nearby_trails();
-     else if (SeeLine.b.Center && SeeLine.b.Left) nearby_trails();
-     else if ( SeeLine.b.Center ) straight_fwd();
-     else if (SeeLine.b.Left) spin_left();
-     else if (SeeLine.b.CntLeft) turn_left();
-     else if (SeeLine.b.CntRight) turn_right();
-     else if (SeeLine.b.Right) spin_right();
+    else if (SeeLine.B == 0b10100u)
+    {
+        OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_1); 
+        TMR0IF = 0; 
+        WriteTimer0(0);        
+        while(!TMR0IF)
+        {
+           check_sensors();
+           set_leds();
+            if(SeeLine.B!=0b10100u)
+                return;
+        }
+        more_than_ninety_left();
+    }
+    else if ( SeeLine.b.Center ) straight_fwd();
+    else if (SeeLine.b.Left) spin_left();
+    else if (SeeLine.b.CntLeft) turn_left();
+    else if (SeeLine.b.CntRight) turn_right();
+    else if (SeeLine.b.Right) spin_right();
 }
 
 void spin_left(void)
@@ -93,14 +107,18 @@ void straight_fwd(void)
 void spin_right(void)
 {
   set_motor_speed(left, slow, 0); 
-  set_motor_speed(right, rev_slow, -37);
+  set_motor_speed(right, rev_slow, -37); 
 }
 void turn_right(void)
 {
   set_motor_speed(left, slow, 0); 
   set_motor_speed(right, stop, 0); 
 }
-
+void reverse(void)
+{
+    set_motor_speed(left, rev_medium, 0);
+    set_motor_speed(right, rev_medium, -10);
+}
 void ninety_degree_left(void)
 {
     OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
@@ -114,7 +132,6 @@ void ninety_degree_left(void)
     set_leds();
     }
 }
-
 void ninety_degree_right(void)
 {
     OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
@@ -128,13 +145,11 @@ void ninety_degree_right(void)
     set_leds();
     }
 }
-
 void nearby_trails(void)
 {
     set_motor_speed(left, slow, 0); 
     set_motor_speed(right, slow, 27); 
 }
-
 void spin_180_degrees(void)
 {
      OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
@@ -148,7 +163,6 @@ void spin_180_degrees(void)
         set_leds();
      }
 }
-
 void finish_line(void)
 {
     OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
@@ -166,7 +180,6 @@ void finish_line(void)
     motors_brake_all();
     while(1);
 }
-
 void end_line(void)
 {
     OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
@@ -189,7 +202,6 @@ void end_line(void)
     motors_brake_all();
     spin_180_degrees();
 }
-
 void check_for_fakes()
 {   OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
     TMR0IF = 0;
@@ -200,7 +212,6 @@ void check_for_fakes()
         set_leds();
     }
 }
-
 void more_than_ninety_right(void)
 {
     OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
@@ -209,8 +220,7 @@ void more_than_ninety_right(void)
     while(!TMR0IF);
     {
         int i;
-        for (i=0; i<6; i++)
-            _delay(100000);
+        _delay(100000);
         check_sensors(); 
         set_leds(); 
         if (SeeLine.B == 0b00101)
@@ -221,19 +231,15 @@ void more_than_ninety_right(void)
         else if (SeeLine.B == 0b00000)
         {
             motors_brake_all();
-            reverse();
-            while(SeeLine.B == 0b00000)
-            {
-                check_sensors(); 
-                set_leds();
-            }
-            motors_brake_all();
-            while(!SeeLine.b.Center)
+            while(!SeeLine.b.Right)
             {
                 spin_right();
                 check_sensors(); 
-                set_leds(); 
+                set_leds();
             }
+            straight_fwd();
+            for(i=0; i<25; i++)
+                _delay(100000u);
             return;
         }
         else if (SeeLine.B == 0b10100 || SeeLine.B == 0b00100)
@@ -243,9 +249,40 @@ void more_than_ninety_right(void)
         }
     }
 }
-
-void reverse(void)
+void more_than_ninety_left(void)
 {
-    set_motor_speed(left, rev_medium, 0);
-    set_motor_speed(right, rev_medium, -10);
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+    TMR0IF = 0; 
+    WriteTimer0(0); 
+    while(!TMR0IF);
+    {
+        int i;
+        _delay(100000);
+        check_sensors(); 
+        set_leds(); 
+        if (SeeLine.B == 0b10100u)
+        {
+            nearby_trails();
+            return;
+        }
+        else if (SeeLine.B == 0b00000)
+        {
+            motors_brake_all();
+            while(!SeeLine.b.Left)
+            {
+                spin_left();
+                check_sensors(); 
+                set_leds();
+            }
+            straight_fwd();
+            for(i=0; i<25; i++)
+                _delay(100000u);
+            return;
+        }
+        else if (SeeLine.B == 0b00101 || SeeLine.B == 0b00100)
+        {
+            straight_fwd();
+            return;
+        }
+    }
 }
