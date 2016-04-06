@@ -1,0 +1,36 @@
+void follow_simple_curves(void)
+{
+    if (SeeLine.B == 0b00101u)
+    {
+        OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_8BIT & T0_PS_1_128); 
+        TMR0IF = 0; 
+        WriteTimer0(0);        
+        while(!TMR0IF)
+        {
+           check_sensors();
+           set_leds();
+           if(SeeLine.B!=0b00101u)
+                return;
+        }
+        more_than_ninety_right();
+    }
+    else if (SeeLine.B == 0b10100u)
+    {
+        OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_8BIT & T0_PS_1_128); 
+        TMR0IF = 0; 
+        WriteTimer0(0);        
+        while(!TMR0IF)
+        {
+           check_sensors();
+           set_leds();
+           if(SeeLine.B!=0b10100u)
+                return;
+        }
+        more_than_ninety_left();
+    }
+    else if ( SeeLine.b.Center ) straight_fwd();
+    else if (SeeLine.b.Left) spin_left();
+    else if (SeeLine.b.CntLeft) turn_left();
+    else if (SeeLine.b.CntRight) turn_right();
+    else if (SeeLine.b.Right) spin_right();
+}
