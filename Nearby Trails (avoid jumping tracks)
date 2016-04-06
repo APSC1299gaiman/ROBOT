@@ -11,8 +11,11 @@ void nearby_trails(void)
                 case 0b01011u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
                 case 0b10001u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
                 case 0b10011u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
+                case 0b01010u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
                 default: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
             }
+            check_sensors();
+            set_leds();
         }
     }
     else if(SeeLine.B==0b00101u)
@@ -26,8 +29,11 @@ void nearby_trails(void)
                 case 0b10110u: set_motor_speed(left, slow, 0); set_motor_speed(right, stop, 0); break;
                 case 0b10001u: set_motor_speed(right, stop, 0); set_motor_speed(left, slow, 27); break;
                 case 0b11001u: set_motor_speed(right, stop, 0); set_motor_speed(left, slow, 27); break;
+                case 0b01010u: set_motor_speed(left, slow, 0); set_motor_speed(right, stop, 0); break;
                 default: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
             }
+            check_sensors();
+            set_leds();
         }
     }
 }
