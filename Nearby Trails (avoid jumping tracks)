@@ -18,7 +18,7 @@ void nearby_trails(void)
             set_leds();
         }
     }
-    else if(SeeLine.B==0b00101u)
+    else if(SeeLine.B==0b10100u)
     {
         while (SeeLine.B!=0b10000u && SeeLine.B!=0b01000u && SeeLine.B!=0b00100u && SeeLine.B!=0b00010u && SeeLine.B!=0b00001u)
         {
