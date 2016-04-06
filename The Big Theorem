@@ -18,7 +18,6 @@ void backwards_follow_simple_curves(void);
 void check_for_fakes();
 void more_than_ninety_right();
 void more_than_ninety_left();
-void reverse(void);
 
 void motor_control(void)
 {
@@ -113,11 +112,6 @@ void turn_right(void)
 {
   set_motor_speed(left, slow, 0); 
   set_motor_speed(right, stop, 0); 
-}
-void reverse(void)
-{
-    set_motor_speed(left, rev_medium, 0);
-    set_motor_speed(right, rev_medium, -10);
 }
 void ninety_degree_left(void)
 {
