@@ -10,19 +10,26 @@ void end_line(void)
         check_sensors();
         set_leds();
         if(SeeLine.B != 0b00000u)
-            return;
+        {
+            if(SeeLine.B != 0b10000u && SeeLine.B != 0b00001u)
+                return;
+            else
+                check_for_fakes();
+        }
     }
     motors_brake_all();
     spin_180_degrees();
-    while(SeeLine.B != 0b00000u)
+}
+void check_for_fakes()
+{   OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535);
+    while(SeeLine.B != 0b00100u && !TMR0IF)
     {
-        set_motor_speed(left, medium, 0);
-        set_motor_speed(right, medium, 10);
-        if(SeeLine.B != 0b00000u)
-            return;
+        check_sensors(); 
+        set_leds();
     }
 }
-
 /*
 Comments
 include following headers:
