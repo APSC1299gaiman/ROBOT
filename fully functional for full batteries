@@ -267,7 +267,7 @@ void check_for_fakes()
 }
 void more_than_ninety_right(void)
 {
-    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_256); 
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
     TMR0IF = 0; 
     WriteTimer0(0); 
     while(!TMR0IF)
