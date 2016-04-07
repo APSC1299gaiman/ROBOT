@@ -1,0 +1,344 @@
+#include "sumovore.h"
+#include "motor_control.h"
+#include <xc.h>
+
+void follow_simple_curves(void);
+void spin_left(void);
+void turn_left(void);
+void straight_fwd(void);
+void turn_right(void);
+void spin_right(void);
+void ninety_degree_left(void);
+void ninety_degree_right(void);
+void nearby_trails(void);
+void spin_180_degrees(void);
+void end_line(void);
+void finish_line(void);
+void backwards_follow_simple_curves(void);
+void check_for_fakes();
+void more_than_ninety_right();
+void more_than_ninety_left();
+void reverse(void);
+
+void motor_control(void)
+{
+     // very simple motor control
+     switch(SeeLine.B)
+     {
+        case 0b00100u:
+        case 0b00010u:
+        case 0b01000u:
+        case 0b00001u:
+        case 0b10000u:
+        case 0b00101u:
+        case 0b10100u:
+            follow_simple_curves();
+            break;
+        case 0b00000u:
+            end_line();
+            break;
+        case 0b11100u:
+            ninety_degree_left();
+            break;
+        case 0b00111u:
+            ninety_degree_right();
+            break;
+        case 0b11111u:
+            finish_line();
+            break;
+        default:
+            break;
+      } 
+}
+
+void follow_simple_curves(void)
+{
+    if (SeeLine.B == 0b00101u)
+    {
+        OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_8BIT & T0_PS_1_128); 
+        TMR0IF = 0; 
+        WriteTimer0(0);        
+        while(!TMR0IF)
+        {
+           check_sensors();
+           set_leds();
+           if(SeeLine.B!=0b00101u)
+                return;
+        }
+        more_than_ninety_right();
+    }
+    else if (SeeLine.B == 0b10100u)
+    {
+        OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_8BIT & T0_PS_1_128); 
+        TMR0IF = 0; 
+        WriteTimer0(0);        
+        while(!TMR0IF)
+        {
+           check_sensors();
+           set_leds();
+           if(SeeLine.B!=0b10100u)
+                return;
+        }
+        more_than_ninety_left();
+    }
+    else if ( SeeLine.b.Center ) straight_fwd();
+    else if (SeeLine.b.Left) spin_left();
+    else if (SeeLine.b.CntLeft) turn_left();
+    else if (SeeLine.b.CntRight) turn_right();
+    else if (SeeLine.b.Right) spin_right();
+}
+
+void spin_left(void)
+{
+  set_motor_speed(left, rev_slow, 0); 
+  set_motor_speed(right, slow, 27); 
+}
+
+void turn_left(void)
+{
+  set_motor_speed(left, stop, 0); 
+  set_motor_speed(right, slow, 27); 
+}
+void straight_fwd(void)
+{
+  set_motor_speed(left, slow, 0); 
+  set_motor_speed(right, slow, 27); 
+}
+void spin_right(void)
+{
+  set_motor_speed(left, slow, 0); 
+  set_motor_speed(right, rev_slow, -37); 
+}
+void turn_right(void)
+{
+  set_motor_speed(left, slow, 0); 
+  set_motor_speed(right, stop, 0); 
+}
+void reverse(void)
+{
+    set_motor_speed(left, rev_medium, 0);
+    set_motor_speed(right, rev_medium, -10);
+}
+void ninety_degree_left(void)
+{
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535u);
+    while(!TMR0IF && SeeLine.B!=0b00001u && SeeLine.B!=0b00100u && SeeLine.B!=0b11111u)
+    {
+    set_motor_speed(left, rev_fast, 0);
+    set_motor_speed(right, fast, 0);
+    check_sensors();
+    set_leds();
+    }
+}
+void ninety_degree_right(void)
+{
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535u);
+    while(!TMR0IF && SeeLine.B!=0b10000u && SeeLine.B!=0b00100u && SeeLine.B!=0b11111u)
+    {
+    set_motor_speed(right, rev_fast, 0);
+    set_motor_speed(left, fast, 0);
+    check_sensors();
+    set_leds();
+    }
+}
+void nearby_trails(void)
+{
+    if(SeeLine.B==0b00101u)
+    {
+        while (SeeLine.B!=0b10000u && SeeLine.B!=0b01000u && SeeLine.B!=0b00100u && SeeLine.B!=0b00010u && SeeLine.B!=0b00001u)
+        {
+            switch(SeeLine.B)
+            {
+                case 0b00101u: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
+                case 0b01001u:
+                case 0b01011u:
+                case 0b10001u:
+                case 0b10011u:
+                case 0b01010u: 
+                    set_motor_speed(left, stop, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
+                default: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
+            }
+            check_sensors();
+            set_leds();
+        }
+    }
+    else if(SeeLine.B==0b10100u)
+    {
+        while (SeeLine.B!=0b10000u && SeeLine.B!=0b01000u && SeeLine.B!=0b00100u && SeeLine.B!=0b00010u && SeeLine.B!=0b00001u)
+        {
+            switch(SeeLine.B)
+            {
+                case 0b10100u: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
+                case 0b10001u:
+                case 0b11001u:
+                case 0b10010u:
+                case 0b10110u:
+                case 0b01010u: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, stop, 0); 
+                    break;
+                default: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
+            }
+            check_sensors();
+            set_leds();
+        }
+    }
+}
+
+void spin_180_degrees(void)
+{
+     OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+     TMR0IF = 0; 
+     WriteTimer0(11786); //65535-42098 * 1.25*10^-7 * 64 = 0.1875s
+     set_motor_speed(left, rev_fast,0);
+     set_motor_speed(right, fast, 0);
+     while(!TMR0IF && SeeLine.B == 0b00000u)
+     {
+        check_sensors(); 
+        set_leds();
+     }
+}
+void finish_line(void)
+{
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+    TMR0IF = 0; 
+    WriteTimer0(42098); //65535-42098 * 1.25*10^-7 * 64 = 0.1875s
+    set_motor_speed(left, medium, 0);
+    set_motor_speed(right, medium, 10);
+    while(!TMR0IF)
+    {
+        check_sensors(); 
+        set_leds();
+        if (SeeLine.B != 0b11111u)
+            return;
+    }
+    motors_brake_all();
+    while(1);
+}
+void end_line(void)
+{
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535);
+    set_motor_speed(left, medium, 0);
+    set_motor_speed(right, medium, 10);
+    while(!TMR0IF)
+    {
+        check_sensors();
+        set_leds();
+        if(SeeLine.B != 0b00000u)
+        {
+            if(SeeLine.B != 0b10000u && SeeLine.B != 0b00001u)
+                return;
+            else
+                check_for_fakes();
+        }
+    }
+    motors_brake_all();
+    spin_180_degrees();
+}
+void check_for_fakes()
+{   OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64);
+    TMR0IF = 0;
+    WriteTimer0(25535);
+    while(SeeLine.B != 0b00100u && !TMR0IF)
+    {
+        check_sensors(); 
+        set_leds();
+    }
+}
+void more_than_ninety_right(void)
+{
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_256); 
+    TMR0IF = 0; 
+    WriteTimer0(0); 
+    while(!TMR0IF)
+    {
+        check_sensors();
+        set_leds();
+        int i;
+        if (SeeLine.B == 0b00000u)
+        {
+            motors_brake_all();
+            while(!SeeLine.b.Right)
+            {
+                spin_right();
+                check_sensors(); 
+                set_leds();
+            }
+            while(!SeeLine.b.Center)
+            {
+                turn_right();
+                check_sensors(); 
+                set_leds();
+            }
+            return;
+        }
+        else if (SeeLine.B == 0b00101u)
+        {
+            nearby_trails();
+            //return;
+        }
+        else if (SeeLine.B == 0b10100u || SeeLine.B == 0b00100u)
+        {
+            straight_fwd();
+            //return;
+        }
+    }
+}
+void more_than_ninety_left(void)
+{
+    OpenTimer0(TIMER_INT_OFF & T0_SOURCE_INT & T0_16BIT & T0_PS_1_64); 
+    TMR0IF = 0; 
+    WriteTimer0(0); 
+    while(!TMR0IF)
+    {
+        check_sensors(); 
+        set_leds(); 
+        if (SeeLine.B == 0b10100u)
+        {
+            nearby_trails();
+            //return;
+        }
+        else if (SeeLine.B == 0b00000u)
+        {
+            motors_brake_all();
+            while(!SeeLine.b.Left)
+            {
+                spin_left();
+                check_sensors(); 
+                set_leds();
+            }
+            while(!SeeLine.b.Center)
+            {
+                turn_left();
+                check_sensors(); 
+                set_leds();
+            }
+            return;
+        }
+        else if (SeeLine.B == 0b00101u || SeeLine.B == 0b00100u)
+        {
+            straight_fwd();
+            //return;
+        }
+    }
+}
