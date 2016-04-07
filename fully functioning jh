@@ -153,13 +153,22 @@ void nearby_trails(void)
         {
             switch(SeeLine.B)
             {
-                case 0b00101u: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
-                case 0b01001u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
-                case 0b01011u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
-                case 0b10001u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
-                case 0b10011u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
-                case 0b01010u: set_motor_speed(left, stop, 0); set_motor_speed(right, slow, 27); break;
-                default: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
+                case 0b00101u: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
+                case 0b01001u:
+                case 0b01011u:
+                case 0b10001u:
+                case 0b10011u:
+                case 0b01010u: 
+                    set_motor_speed(left, stop, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
+                default: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
             }
             check_sensors();
             set_leds();
@@ -171,13 +180,22 @@ void nearby_trails(void)
         {
             switch(SeeLine.B)
             {
-                case 0b10100u: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
-                case 0b10010u: set_motor_speed(left, slow, 0); set_motor_speed(right, stop, 0); break;
-                case 0b10110u: set_motor_speed(left, slow, 0); set_motor_speed(right, stop, 0); break;
-                case 0b10001u: set_motor_speed(right, stop, 0); set_motor_speed(left, slow, 27); break;
-                case 0b11001u: set_motor_speed(right, stop, 0); set_motor_speed(left, slow, 27); break;
-                case 0b01010u: set_motor_speed(left, slow, 0); set_motor_speed(right, stop, 0); break;
-                default: set_motor_speed(left, slow, 0); set_motor_speed(right, slow, 27); break;
+                case 0b10100u: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
+                case 0b10001u:
+                case 0b11001u:
+                case 0b10010u:
+                case 0b10110u:
+                case 0b01010u: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, stop, 0); 
+                    break;
+                default: 
+                    set_motor_speed(left, slow, 0); 
+                    set_motor_speed(right, slow, 27); 
+                    break;
             }
             check_sensors();
             set_leds();
@@ -272,9 +290,6 @@ void more_than_ninety_right(void)
                 check_sensors(); 
                 set_leds();
             }
-            straight_fwd();
-            for(i=0; i<25; i++)
-                _delay(100000u);
             return;
         }
         else if (SeeLine.B == 0b00101u)
@@ -320,9 +335,6 @@ void more_than_ninety_left(void)
                 check_sensors(); 
                 set_leds();
             }
-            straight_fwd();
-            for(i=0; i<25; i++)
-                _delay(100000u);
             return;
         }
         else if (SeeLine.B == 0b00101u || SeeLine.B == 0b00100u)
